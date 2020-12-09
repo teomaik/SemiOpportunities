@@ -304,6 +304,10 @@ public class Cluster {
 	}
 
 	public void calculateCC_SCOM(ArrayList<Variables> vList, ArrayList<Integer> lines_not_calculated_in_metrics) {
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		double sumCC = 0;
 		double sumSCOM = 0;
 		int pairs_CC = 0, pairs_SCOM = 0;
@@ -340,6 +344,10 @@ public class Cluster {
 
 	public void calculateLSCC(ArrayList<Variables> vList, ArrayList<Integer> lines_not_calculated_in_metrics) {
 		// equals number of attributes
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		int l = 0;
 		// equals number of lines
 		int k = 0;
@@ -376,6 +384,10 @@ public class Cluster {
 
 	public void calculateTCC_LCC_DCD_DCI(ArrayList<Variables> vList,
 			ArrayList<Integer> lines_not_calculated_in_metrics) {
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		double q_tight = 0, q_loose = 0, qm_tight = 0, qm_loose = 0, count = 0;
 		boolean common_tight = false, common_loose = false, common_tight_method = false, common_loose_method = false;
 
@@ -568,7 +580,10 @@ public class Cluster {
 	}
 
 	public void calculateLCOM3_LCOM4(ArrayList<Variables> vList, ArrayList<Integer> lines_not_calculated_in_metrics) {
-
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		ArrayList<ArrayList<Integer>> connectedGraphsLCOM3 = new ArrayList<ArrayList<Integer>>();
 		ArrayList<ArrayList<Integer>> connectedGraphsLCOM4 = new ArrayList<ArrayList<Integer>>();
 		int j = 0;
@@ -726,6 +741,10 @@ public class Cluster {
 	}
 
 	public void calculateCOB_LCOM5_COH(ArrayList<Variables> vList, ArrayList<Integer> lines_not_calculated_in_metrics) {
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		double v = 0; // number of variables that are used in the cluster
 		double b = end - start + 1 - find_invalid_lines_for_cluster(end, start, lines_not_calculated_in_metrics); // LOC
 																													// of
@@ -767,6 +786,7 @@ public class Cluster {
 
 	public void print(ArrayList<Variables> vList, ArrayList<ArrayList<Integer>> invalid_lines,
 			ArrayList<Integer> lines_for_else, String opt, String type) {
+		
 		System.out.println("## HELLO !!!! Print ##");// FIXME DEBUG
 		ArrayList<Integer> lines_not_calculated_in_metrics = new ArrayList<Integer>();
 

@@ -14,13 +14,13 @@ import java.util.logging.Logger;
  *
  * @author Nikos
  */
-public class cFileNew extends CodeFile{
+public class cFileNew extends CodeFile{	//TODO Einai axristo pros to paron
 
     boolean commentBlock=false;
     String line;
     HashMap<String, Integer> methodsLocDecl=new HashMap<>();
     
-    public cFileNew(File file) {
+    public cFileNew(File file, boolean trrash) {
         super(file);
     }
 
@@ -177,7 +177,7 @@ public class cFileNew extends CodeFile{
             }*/
             calculateCohesion();
         } catch (IOException ex) {
-            Logger.getLogger(fortranFile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(cParserSemiLatest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -232,7 +232,7 @@ public class cFileNew extends CodeFile{
         //cParserSemi cSemi= new cParserSemi(file,methodsLocDecl);
       //  cSemi.parse();
         
-        CppParserSemiNEW newCppSemi = new CppParserSemiNEW(file,methodsLocDecl);
+    	cParserSemiLatest newCppSemi = new cParserSemiLatest(file,methodsLocDecl);
         newCppSemi.parse();
     }
 }

@@ -171,7 +171,7 @@ public class cFile extends CodeFile{
             }*/
             calculateCohesion();
         } catch (IOException ex) {
-            Logger.getLogger(fortranFile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(cParserSemiLatest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -229,7 +229,7 @@ public class cFile extends CodeFile{
         //CppParserSemiNEW newCppSemi = new CppParserSemiNEW(file,methodsLocDecl);
         //newCppSemi.parse();
         
-        cParserSemi3 ss = new cParserSemi3(file,methodsLocDecl);
+        cParserSemiLatest ss = new cParserSemiLatest(file,methodsLocDecl);
         ss.parse();
     }
 }

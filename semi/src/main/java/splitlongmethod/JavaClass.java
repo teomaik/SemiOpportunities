@@ -33,7 +33,7 @@ public class JavaClass {
 			while ((new_line = br.readLine()) != null) {
 				line = line + new_line;
 			}
-			System.out.println("LINE EXC: " + line);
+			//System.out.println("LINE EXC: " + line);
 			String[] tokens = line.split("Method:");
 			String[] attributes = tokens[0].split(";");
 
@@ -186,6 +186,7 @@ public class JavaClass {
 
 	public void CalculateMethodsMetrics(ArrayList<ArrayList<Integer>> invalid_lines) {
 
+		System.out.println("\nJavaClass***DEBUG filePath : "+this.getFilePath()+" , className: "+this.name);
 		System.out.println("##NEW CalculateMethodsMetrics Methods size : " + methods.size());
 		for (int j = 0; j < methods.size(); j++) {
 			// Method method = new Method(methods.get(j).getName());
@@ -199,6 +200,7 @@ public class JavaClass {
 
 	public void identifyExtractMethodOpportunities(ArrayList<ArrayList<Integer>> invalid_lines,
 			ArrayList<Integer> possible_invalid_bracket_close) {
+		System.out.println("\nJavaClass***DEBUG filePath : "+this.getFilePath()+" , className: "+this.name);
 		System.out
 				.println("NEW JavaClass : identifyExtractMethodOpportunities [methods size : " + methods.size() + "]");
 		// TODO pass the method name as a parameter
@@ -222,6 +224,7 @@ public class JavaClass {
 
 	public void identifyExtractMethodOpportunitiesForOneMethod(ArrayList<ArrayList<Integer>> invalid_lines,
 			ArrayList<Integer> possible_invalid_bracket_close, String method_name) {
+		System.out.println("\nJavaClass***DEBUG filePath : "+this.getFilePath()+" , className: "+this.name);
 		System.out.println("NEW JavaClass : identifyExtractMethodOpportunities [methods size : " + methods.size()
 				+ "] selected method = " + method_name);
 		Method selected_method = this.methods.getMethodByName(method_name);

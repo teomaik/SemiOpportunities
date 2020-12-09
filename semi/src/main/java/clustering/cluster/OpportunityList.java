@@ -39,6 +39,11 @@ public class OpportunityList {
 	public void start_clustering(double max_size_difference_percentage, double min_overlap, int lines_max_difference,
 			double signifficant_difference, String cohesion_metric_name, int cohesion_metric_index, boolean deltaRun) {
 		resetOpportunities();
+		
+		boolean skipClustering_DEBUG_VAR = true;
+		if(skipClustering_DEBUG_VAR) {
+			return;
+		}
 		if (LongMethodDetector.DebugMode) {
 			System.out.print("Clustering with max_dif_percentage: " + max_size_difference_percentage
 					+ " and min_overlap: " + min_overlap
@@ -165,7 +170,8 @@ public class OpportunityList {
 	}
 
 	public void add(Opportunity opportunity) {
-		opportunities.add(opportunity);
+		//newSemiSDKAddOppTest(opportunity); //New Line for better memory usage
+		opportunities.add(opportunity); //Original Line
 	}
 
 	public int size() {

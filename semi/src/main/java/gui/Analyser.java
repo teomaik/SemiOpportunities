@@ -29,14 +29,6 @@ public class Analyser {
 //            System.out.println("You selected the folder: " + file.getAbsolutePath());
 		} else {
 			long start = System.currentTimeMillis();
-
-			//ExtraParseUtils asd = new ExtraParseUtils();	//***DEBUG
-			//asd.convertSimpleIfsToLine("./" + file.getName() + "_parsed.txt");	//***DEBUG
-			
-			//boolean debStop = true;	//***POINT TEST_COM
-			//if(debStop) { 	//***POINT TEST_COM
-			//	return null;	//***POINT TEST_COM
-			//}	//***POINT TEST_COM
 			
 			
 			SplitLongMethod splitlongmethod = new SplitLongMethod("./" + file.getName() + "_parsed.txt",

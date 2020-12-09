@@ -10,11 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author Nikos
- */
-public class cParserSemi3 {
+public class cParserSemiLatest {
 
 	File file;
 	boolean commentBlock = false;
@@ -36,7 +32,7 @@ public class cParserSemi3 {
 			"float", 
 			"void"};
 
-	public cParserSemi3(File file, HashMap<String, Integer> methodsLocDecl) {
+	public cParserSemiLatest(File file, HashMap<String, Integer> methodsLocDecl) {
 		this.file = file;
 		this.methodsLocDecl = methodsLocDecl;
 	}
@@ -49,10 +45,16 @@ public class cParserSemi3 {
 					sourceLines.add("");
 					continue;
 				}
-				sourceLines.add(line);
+				
+				String[] split = line.split("//");
+				if(split==null || split.length==0) {
+					sourceLines.add("");
+					continue;
+				}
+				sourceLines.add(split[0]);
 			}
 		} catch (IOException ex) {
-			Logger.getLogger(cParserSemi.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(cParserSemiLatest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -111,12 +113,11 @@ public class cParserSemi3 {
 						if (line.length() > 1) {
 							line = line.trim().replaceAll(" +", " ");
 							if (line.charAt(0) != ')') {
-								int index = line.indexOf(")");	//***TEST MPALOMA
-								if(index == -1) {	//***TEST MPALOMA
-									index = line.length()-1;	//***TEST MPALOMA
-								}	//***TEST MPALOMA
-								String args = line.substring(0, index);	//***TEST MPALOMA
-								//String args = line.substring(0, line.indexOf(")"));
+								int index = line.indexOf(")");
+								if(index == -1) {
+									index = line.length()-1;
+								}
+								String args = line.substring(0, index);
 								String[] var = args.split(",");
 								for (String str : var) {
 									String[] var1 = str.trim().split(" ");
@@ -143,29 +144,21 @@ public class cParserSemi3 {
 						if (line.contains("{")) {
 							methodDel = false;
 							if (methodToPrint.contains(",")) {
-								// System.out.println(methodToPrint.substring(0, methodToPrint.length() - 1) +
-								// ");");
 								parsedLines.add(methodToPrint.substring(0, methodToPrint.length() - 1) + ");");
-								// System.out.println("++++METHOD: "+(methodToPrint.substring(0,
-								// methodToPrint.length() - 1) + ");"));
 							} else {
-								// System.out.println(methodToPrint + ");");
 								parsedLines.add(methodToPrint + ");");
-								// System.out.println("++++METHOD: "+(methodToPrint + ");"));
 							}
 							for (String str : methodParam) {
 								if (str.contains(")")) {
 									str = str.replace(")", "");
 								}
-								// System.out.println("parameter#" + str + ";");
 								parsedLines.add("parameter#" + str + ";");
-								// System.out.println("+++"+("parameter#" + str + ";"));
 							}
 							methodToPrint = "";
 							methodParam.clear();
 						}
 					}
-				} else if (commentBlock) { // TODO test if -> */ <code>
+				} else if (commentBlock) { 
 					stopCommentBlock(line);
 				}
 
@@ -173,12 +166,12 @@ public class cParserSemi3 {
 
 			cleanParsedLines();
 
-			// utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt_new2",
-			// this.parsedLines, false);
-			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", this.parsedLines, false);
+			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", this.parsedLines, false);	//auto xrisimopoiitai gia analiseis, kai se auto enonontai ta mikra IF, an treksei o katallilos kwdikas
+			
+			utils.Utilities.writeCSV("./" + file.getName() + "_original_parsed.txt", this.parsedLines, false);	//arxeio pou den allazei to _parsed arxeio. Edw ta IF paramenoun opws itan. Axristo stin periptwsi pou den enosoume ta IF
 
 		} catch (IOException ex) {
-			Logger.getLogger(cParserSemi.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(cParserSemiLatest.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -188,7 +181,7 @@ public class cParserSemi3 {
 		}
 	}
 
-	private void splitLine(String line, int id) {
+	private void splitLine(String line, int id) {	//kaleitai sto telos tis analisis kathe grammis
 		String newLine = replaceWithSpaces(line.trim());
 		newLine = removeVariableType(newLine.trim());
 		
@@ -237,7 +230,7 @@ public class cParserSemi3 {
 		return false;
 	}
 	
-	private int findClosingBracket(int id, String command) {
+	private int findClosingBracket(int id, String command) {	//vriskei pou kleinei kapoia agkili '{'
 		int idEnd = id;
 		int bal = 0;
 		boolean started = false;
@@ -245,15 +238,12 @@ public class cParserSemi3 {
 		boolean isIf= (command.equals("if"));
 		boolean isFor= (command.equals("for"));
 		
-		// int kkk =0;
 		for (int i = id; i < this.sourceLines.size(); i++) {
 			if(!started && isIf && !isFor) {
 				if(!started && !this.sourceLines.get(i).contains("{") && this.sourceLines.get(i).contains(";")) {
-					//System.out.println((i+1)+", IF SINGLE LINE: "+this.sourceLines.get(i));
 					return i;
 				}
 				if(i>id && isGroupCommand(this.sourceLines.get(i))) {
-					//System.out.println("IS GROUP COMMAND: "+this.sourceLines.get(i));
 					return i;
 				}
 			}
@@ -269,12 +259,10 @@ public class cParserSemi3 {
 						}
 					}
 					if(semicols>3) {
-						//System.out.println((i+1)+", FOR SINGLE LINE: "+this.sourceLines.get(i));
 						return i;
 					}
 				}
 				if(i>id && !started && !this.sourceLines.get(i).contains("{") && this.sourceLines.get(i).contains(";")) {
-					//System.out.println((i+1)+", FOR SINGLE LINE: "+this.sourceLines.get(i));
 					return i;
 				}
 			}
@@ -291,8 +279,6 @@ public class cParserSemi3 {
 				}
 			}
 
-			// kkk++;
-			// System.out.println("Line ("+kkk+") "+(i+1)+": "+this.sourceLines.get(i));
 
 			if (!started && bal > 0) {
 				started = true	;
@@ -315,13 +301,8 @@ public class cParserSemi3 {
 		}
 		if (id == idEnd) {
 			return idEnd;
-			// System.out.println("***Error during END_IF calculation with starting Line id:
-			// " + (id+1));
-			// throw new IllegalArgumentException("Error during END_IF calculation");
 		}
 
-		// System.out.println("!!!!!!!!!!!!!!!!!!IF START @: "+(id+1));
-		// System.out.println("!!!!!!!!!!!!!!!!!!IF END @: "+(idEnd+1));
 
 		return idEnd;
 	}
@@ -344,7 +325,7 @@ public class cParserSemi3 {
 		int i=1;
 		while(count < 2) {	//add the next two valid lines to Array, to check for an else statement
 			if((id+i)>=this.sourceLines.size()) {
-				return id;
+				break;//return id;
 			}
 			if(!(line.startsWith("//") || line.startsWith("/*") || line.startsWith("*") || line.startsWith("*/"))) {
 				lines.add(line);
@@ -352,6 +333,9 @@ public class cParserSemi3 {
 				count++;
 			}
 			i++;
+			if((id+i)>=this.sourceLines.size()) {
+				break;
+			}
 			line = this.sourceLines.get(id+i);
 			line = line.trim();
 		}
@@ -502,29 +486,22 @@ public class cParserSemi3 {
 		splitLine(line, id);
 	}
 	
-	private void lineInterp(int id) {
-		/*
-		 * TODO 
-		 * check Switch-Case 
-		 * check Try-Catch 
-		 * check Do-While 
-		 * 
-		 * 
-		 * 
-		 * correct-check Else-If 
-		 * correct-check Else
-		 */
+	private void lineInterp(int id) {	//kathe grammi ksekinaei tin analisi tis edw
 
 		String line = sourceLines.get(id).trim();
+		if(line.contains("\"")) {
+			//System.out.println("OLD: "+line);
+			line = replaceCodeStringsWithType(line);
+			sourceLines.set(id, line);
+			//System.out.println("NEW: "+line);
+		}
+		
 		if (line.startsWith("//")) {
 			return;
 		}
 		line = this.replaceWithSpaces(line).replaceFirst("\\s*", "");
 		if (line.startsWith("if ")) {
 			//System.out.println("-------------------------------IF LINE");
-			//System.out.println(line);
-			//System.out.println(this.replaceWithSpaces(line).trim());
-			//System.out.println(this.replaceWithSpaces(line).replaceFirst("\\s*", ""));
 			ifLine(id);
 		} else if (line.startsWith("else if ") || line.startsWith("else ") || line.equals("else")) {
 			//System.out.println("-------------------------------ELSE LINE");
@@ -543,10 +520,10 @@ public class cParserSemi3 {
 				idWipe = 0;
 				switchVar = "";
 			}
-			//System.out.println("-------------------------------WHILE LINE");
+			//System.out.println("-------------------------------SWITCH LINE");
 			switchLine(id);
 		}  else if (line.startsWith("case ") || line.startsWith("default ")) {
-			//System.out.println("-------------------------------WHILE LINE");
+			//System.out.println("-------------------------------CASE LINE");
 			if(idWipe<=id) {
 				idWipe = 0;
 				switchVar = "";
@@ -559,13 +536,13 @@ public class cParserSemi3 {
 			}
 			breakLine(id);
 		}  else if (line.startsWith("try ") || line.equals("try")) {
-			//System.out.println("-------------------------------FOR LINE");
+			//System.out.println("-------------------------------TRY LINE");
 			tryLine(id);
 		}  else if (line.startsWith("catch ") || line.equals("catch")) {
-			//System.out.println("-------------------------------FOR LINE");
+			//System.out.println("-------------------------------CATCH LINE");
 			catchLine(id);
 		}  else if (line.startsWith("do ") || line.equals("do")) {
-			//System.out.println("-------------------------------FOR LINE");
+			//System.out.println("-------------------------------DO LINE");
 			doLine(id);
 		} else {
 			line = this.replaceWithSpaces(line);
@@ -574,8 +551,49 @@ public class cParserSemi3 {
 
 	}
 	
+	public String replaceCodeStringsWithType(String line) {	
+		
+		line = line.trim();
+		
+		if(line.startsWith("\\")) {
+			line = " "+line;
+		}
+		String[] split0 = line.split("\\\\");
+		line = "";
+		 for(String spl0 : split0) {
+			 if(spl0.startsWith("\"")) {
+				 line += spl0.replaceFirst("\"", "backslash_quote");
+			 }else {
+				 line += spl0;
+			 }
+		 }
+		
+		if(!line.contains("\"")) {
+			return line;
+		}
+		
+		boolean flag = false;
+		if(line.startsWith("\"")) {
+			flag = true;
+		}
+		String[] split = line.split("\"");
+		String ret = "";
+		int i=0;
+		
+		while(i<split.length) {
+			if(flag) {
+				flag= false;
+			}else {
+				ret += split[i];
+				flag = true;
+			}
+			i++;
+		}
+		ret = ret.trim();
+		return ret;
+	}
+	
 	private String removeVariableType(String line) {
-		//line = this.replaceWithSpaces(line);
 		line.trim();
 		for(String type : varTypes) {
 			if(line.startsWith(type+" ")) {
@@ -614,15 +632,10 @@ public class cParserSemi3 {
 		line = line.replaceAll("\\?", " ");
 		line = line.replaceAll("\\|\\|", " ");
 		line = line.replaceAll("\\|", " ");
+		line = line.replaceAll("^", " ");
+		
 		return line;
 	}
-
-
-	/**
-	 * It returns if there is a comment
-	 *
-	 * @param word string to analyze
-	 */
 
 	private boolean isCommentLine(String word) {
 		if (word.length() > 1) {
@@ -656,11 +669,6 @@ public class cParserSemi3 {
 		return false;
 	}
 
-	/**
-	 * It returns if comment block stops
-	 *
-	 * @param line string to analyze
-	 */
 	private void stopCommentBlock(String line) {
 		if (line.contains("*/")) {
 			commentBlock = false;
@@ -670,11 +678,6 @@ public class cParserSemi3 {
 		}
 	}
 
-	/**
-	 * It returns if a string is a number
-	 *
-	 * @param str string to check
-	 */
 	public boolean isNumeric(String str) {
 		return (// str.chars().allMatch(Character::isDigit) ||
 				// Pattern.matches("([0-9]*)\\.([0-9]*)", str) ||

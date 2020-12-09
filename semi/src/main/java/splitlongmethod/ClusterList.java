@@ -52,8 +52,10 @@ public class ClusterList {
 			ArrayList<ArrayList<Integer>> invalid_lines_temp = new ArrayList<ArrayList<Integer>>();
 			invalid_lines_temp.addAll(invalid_lines);
 			invalid_lines_temp.add(lines_of_cluster);
+			System.out.println("{!!!!!!!!!!!!!!!!!!! ***DEBUG"); //***DEBUG
 			Cluster c = new Cluster(m.getMethodStart(invalid_lines_temp), m.getMethodEnd());
 			c.print(m.getVariableList(), invalid_lines_temp, lines_for_else, "noparams", "new");
+			System.out.println("}!!!!!!!!!!!!!!!!!!! END ***DEBUG"); //***DEBUG
 			String[] new_metrics = c.getMetrics();
 			// TODO make print return an Opportunity
 			Opportunity opp = parseMetrics(original_metrics, cluster_metrics, new_metrics);

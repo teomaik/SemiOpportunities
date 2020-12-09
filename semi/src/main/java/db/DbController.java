@@ -138,7 +138,7 @@ public class DbController {
 
 		if (projectName == null || projectName.isEmpty() || className == null || className.isEmpty()
 				|| methodName == null || methodName.isEmpty() || classPath == null || classPath.isEmpty()
-				|| cohesion_benefit <= 0 || line_start < 0 || line_end < 0 || line_start >= line_end || LoC <= 0) {
+				|| cohesion_benefit < 0 || line_start < 0 || line_end < 0 || line_start >= line_end || LoC <= 0) {
 			return false;
 		}
 

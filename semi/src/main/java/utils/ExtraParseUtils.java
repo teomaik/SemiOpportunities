@@ -34,12 +34,14 @@ public class ExtraParseUtils {
 	}
 	
 	public void convertSimpleIfsToLine(String filePath) {
+		System.out.println("******file "+filePath);
 		ArrayList<String> lines = fileToArray(filePath);
 		if(lines==null) {
 			return;
 		}
 		
 		//ArrayList<String> newLines = new ArrayList<String>();
+		int dummyVar = 0;
 		
 		boolean flag = false;
 		int idx = 0;
@@ -54,40 +56,136 @@ public class ExtraParseUtils {
 				//System.out.println(split[split.length-1].replace(";", ""));
 				try {
 					if(endIf<Integer.valueOf(split[split.length-1].replace(";", ""))) {
+						
+						List<String> newLns = new ArrayList<String>();
+						for(int r=idx+2; r<i; r++) {
+							String[] temp = lines.get(r).split("#");
+							String newLine = lines.get(r).replace("#"+temp[temp.length-1], "#");//+(beginIf+1)+";");
+							newLns.add(newLine);
+							lines.remove(idx+2);
+						}
+
+						String newDummyVar = "Usage#dummyVar"+dummyVar+"#";
+						for(String ln : newLns) {
+							lines.add(idx+2, ln+""+endIf+";");
+						}
+						lines.add(idx+2, newDummyVar+""+endIf+";");
+						
+						for(int k=endIf-1; k>beginIf; k--) {
+							lines.add(idx+2, newDummyVar+""+k+";");
+						}
+						
+						for(String ln : newLns) {
+							lines.add(idx+2, ln+""+beginIf+";");
+						}
+						lines.add(idx+2, newDummyVar+""+beginIf+";");
+						
+						flag = false;
+						dummyVar++;
+					}	
+			
+					/*
+					if(endIf<Integer.valueOf(split[split.length-1].replace(";", ""))) {
 						for(int r=idx; r<i; r++) {
 							String[] temp = lines.get(r).split("#");
 							String newLine = lines.get(r).replace("#"+temp[temp.length-1], "#"+(beginIf+1)+";");
 							lines.set(r, newLine);//.replace("#"+temp[temp.length-1], "#"+beginIf);
+							lines.set(r, newLine+"  ***TEST DEBUG");
 						}
 						//System.out.println("Grouped lines "+beginIf +" to "+endIf);
 						flag = false;
+						tmpVar++;
 					}					
+					 */
 				}catch(Exception e) {
 					flag = false;
 				}
 			}
-			
-			if(!lines.get(i).startsWith("BEGIN_IF#")) {
-				continue;
+			try{
+				if(!lines.get(i).startsWith("BEGIN_IF#")) {
+					continue;
+				}
+				
+				if(!lines.get(i+1).startsWith("END_IF#")) {
+					i++;
+					continue;
+				}
+				if(flag) {
+					//System.out.println("New inner IF inside "+beginIf +" and "+endIf);
+				}
+				
+				idx = i;
+				flag = true;
+				String[] split = lines.get(i).split("#");
+				beginIf = Integer.valueOf(split[split.length-1].replace(";", ""));//-1; //***TODO
+				split = lines.get(i+1).split("#");
+				endIf = Integer.valueOf(split[split.length-1].replace(";", ""));
+				
+			}catch(Exception e) {
+				return;
 			}
-			
-			if(!lines.get(i+1).startsWith("END_IF#")) {
-				i++;
-				continue;
-			}
-			if(flag) {
-				//System.out.println("New inner IF inside "+beginIf +" and "+endIf);
-			}
-			
-			idx = i;
-			flag = true;
-			String[] split = lines.get(i).split("#");
-			beginIf = Integer.valueOf(split[split.length-1].replace(";", ""));
-			split = lines.get(i+1).split("#");
-			endIf = Integer.valueOf(split[split.length-1].replace(";", ""));
 			
 		}
-		
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
+		System.out.println("****************************************************************************");
 		writeFile(lines, filePath);
 	}
 	
