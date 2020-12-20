@@ -78,12 +78,16 @@ public class mainOpps {
 		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
 		//prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
 		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
+		prjPath = "C:\\Users\\temp\\Downloads\\testRodiniaSmall\\test";
 		
 		BasicController ctrl = new BasicController("c", "TestPrj", "0", prjPath,
 				"nodb");
 
 		boolean result = ctrl.runExperiment();	//***TEMP_COMMENT
-		ctrl.writeLogTimeNeededPerFile();
+		
+		ctrl.writeLogTimeNeededPerFileAnalysis();
+		ctrl.writeLogTimeNeededPerFileParse();
+		
 		doEndStuff(); // ***POINT TEST_COM diagrfei ta _parsed arxeia.
 		System.out.println("Telos to test!!!!");
 		if (result) {

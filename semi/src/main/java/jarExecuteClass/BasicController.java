@@ -385,9 +385,18 @@ public class BasicController {
 							// new cFileNew(file);
 
 							System.out.println("***DEBUG 'c' Parsing: " + file.getName());
-
+							
+							//***DEBUG
+							String tpf = file.getAbsolutePath();
+							long start = System.currentTimeMillis();
+							
 							tempFile.parse();
-
+							
+							//***DEBUG
+							long end = System.currentTimeMillis();
+							tpf = (((end - start) / 1000) / 60)+" mins, "+tpf;
+							timeToParse.add(tpf);
+							
 							// ***TEST ***DEBUG < allazei to arxeio parsed.txt kai enonei ta "mikra" IF
 							// //***POINT TEST_COM
 
@@ -427,14 +436,29 @@ public class BasicController {
 	}
 	
 	ArrayList<String> debugTPF = new ArrayList<String>();
-	public void writeLogTimeNeededPerFile() {
+	public void writeLogTimeNeededPerFileAnalysis() {
 		String log = "";
 
 		for (String file : this.debugTPF) {
 			log += file + "\n";
 		}
 
-		try (PrintWriter out = new PrintWriter("debugTimePerFile.txt")) {
+		try (PrintWriter out = new PrintWriter("debugTimePerFileAnalysis.txt")) {
+			out.println(log);
+		} catch (Exception e) {
+
+		}
+	}
+
+	ArrayList<String> timeToParse = new ArrayList<String>();	//***DEBUG
+	public void writeLogTimeNeededPerFileParse() {
+		String log = "";
+
+		for (String file : this.timeToParse) {
+			log += file + "\n";
+		}
+
+		try (PrintWriter out = new PrintWriter("debugTimePerFileParse.txt")) {
 			out.println(log);
 		} catch (Exception e) {
 
