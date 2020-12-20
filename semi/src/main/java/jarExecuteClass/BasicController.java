@@ -58,7 +58,7 @@ public class BasicController {
 		dbCon = new DbController(dbCredPath);
 		if (!dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			return; // ***POINT TEST_COM
+			//return; // ***POINT TEST_COM
 		}
 		this.projectProgramingLanguage = type;
 		this.projectName = projectName;
@@ -72,7 +72,7 @@ public class BasicController {
 		System.out.println("expStarted"); // ***DEBUG
 		if (this.dbCon == null || !this.dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			return false; // ***POINT TEST_COM
+			//return false; // ***POINT TEST_COM
 		}
 
 		dbCon.closeConn();
@@ -187,7 +187,10 @@ public class BasicController {
 		// ***************************************************************************************************
 		// <
 		boolean ret = true;
-
+		
+		String tpf = "file: "+file.getAbsolutePath();	//***DEBUG
+		long start = System.currentTimeMillis(); //***DEBUG
+		
 		analyser.setFile(file);
 
 		// classResults.add(analyser.performAnalysis()); //***TEMPCOM
@@ -252,6 +255,9 @@ public class BasicController {
 			}
 		} catch (OutOfMemoryError E) {
 			skippedFiles.add(file.getAbsolutePath());
+			long end = System.currentTimeMillis();
+			tpf = (((end - start) / 1000) / 60)+" mins, Failed: "+tpf;
+			debugTPF.add(tpf);
 			return true;
 		}
 
@@ -259,6 +265,10 @@ public class BasicController {
 		// fileDel.delete();
 		// >
 		// ***************************************************************************************************
+		long end = System.currentTimeMillis();
+		tpf = (((end - start) / 1000) / 60)+" mins, Succeeded: "+tpf;
+		debugTPF.add(tpf);
+		
 		return ret;
 	}
 
@@ -415,5 +425,19 @@ public class BasicController {
 
 		return ret;
 	}
+	
+	ArrayList<String> debugTPF = new ArrayList<String>();
+	public void writeLogTimeNeededPerFile() {
+		String log = "";
 
+		for (String file : this.debugTPF) {
+			log += file + "\n";
+		}
+
+		try (PrintWriter out = new PrintWriter("debugTimePerFile.txt")) {
+			out.println(log);
+		} catch (Exception e) {
+
+		}
+	}
 }

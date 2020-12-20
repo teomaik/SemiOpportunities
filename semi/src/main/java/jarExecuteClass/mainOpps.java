@@ -11,7 +11,7 @@ public class mainOpps {
 //***DEBUG ***TEST <
 		doEndStuff();
 
-		boolean test = false;
+		boolean test = true;
 		if (test) {
 			test = testThings(); // ***POINT TEST_COM
 			return;
@@ -77,13 +77,13 @@ public class mainOpps {
 		prjPath = "C:\\Users\\Maik\\Downloads\\kameleon2\\base\\src";
 		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
 		//prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
-		//prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
-		prjPath = "C:\\Users\\temp\\Downloads\\delete\\fastjson-master\\src";
-		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath,
+		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
+		
+		BasicController ctrl = new BasicController("c", "TestPrj", "0", prjPath,
 				"nodb");
 
 		boolean result = ctrl.runExperiment();	//***TEMP_COMMENT
-		
+		ctrl.writeLogTimeNeededPerFile();
 		doEndStuff(); // ***POINT TEST_COM diagrfei ta _parsed arxeia.
 		System.out.println("Telos to test!!!!");
 		if (result) {
