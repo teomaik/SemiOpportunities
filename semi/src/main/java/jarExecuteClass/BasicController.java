@@ -90,36 +90,19 @@ public class BasicController {
 		case "cpp":
 			commit = doAnalysis_C_Cpp(projectDirectoryPath);
 			break;
-		// case "f":
-		// commit = doAnalysis_F(projectDirectoryPath);
-		// break;
-		// case "f90":
-		// commit = doAnalysis_F(projectDirectoryPath);
-		// break;
-
 		default:
 			System.out.println("wrong argument for Programing Language (java, c, f, f90)");
 		}
-		System.out.println("a-sw"); // ***DEBUG
+
+
 		if (!commit) {
 			System.out.println("Something went wrong with the file analysis");
 			return false;
 		}
 
-		System.out.println("Number of refs: " + number_of_refs);
-		System.out.println("Num opps: " + opps.size());
 		for (String ss : opps) {
 			System.out.println(ss);
 		}
-
-		// Toolkit.getDefaultToolkit().beep();
-		// promptEnterKey(); //***DEBUG
-		System.out.println("moving on..."); // ***DEBUG
-		System.out.println("***DEBUG RefsNeeded   --->   " + needsRef);
-		System.out.println("***DEBUG skippedRefs   --->   " + skippedRefs);
-		System.out.println("***DEBUG dbA   --->   " + dbA + " ***");
-		System.out.println("***DEBUG dbB   --->   " + dbB + " ***");
-		System.out.println("***DEBUG beforeRef   --->   " + beforeRef);
 
 		writeLogSkippedFiles();
 		dbCon.getNewConnection(credPath);
@@ -183,6 +166,61 @@ public class BasicController {
 	int dbB = 0;
 	int beforeRef = 0;
 
+	private boolean doParallelAnalysis(File file) {
+		boolean ret = true;
+		
+		Analyser analyser = new Analyser();
+		analyser.setFile(file);
+		
+		try {
+			
+			JavaClass clazz = analyser.performAnalysis();
+
+			for (int index = 0; index < clazz.getMethods().size(); index++) {
+				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
+
+				if (needsRefactoring) {
+					needsRef++;
+
+					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {// skip methods with less
+																							// line
+																							// // of code
+						continue;
+					}
+					String className = file.getName().replaceFirst("./", "");
+					dbA++;
+					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
+					dbB++;
+					String methodName = clazz.getMethods().get(index).getName();
+					settings = new MethodOppExtractorSettings();
+					MethodOppExtractor extractor = new MethodOppExtractor(file, clazz.getMethods().get(index).getName(),
+							settings, clazz);
+
+					Method method = clazz.getMethods().getMethodByName(methodName);
+					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
+
+					beforeRef++;
+
+					int count = 1;
+					if(opportunities.size()>0) {
+						Opportunity opp = opportunities.get(0);
+						opps.add(className + "." + methodName + " -> " + opp.getStartLineCluster() + "-"
+								+ opp.getEndLineCluster() + " : " + opp.getOpportunityBenefitMetricByName("lcom2"));
+						ret = ret && dbCon.insertMethodToDatabase(projectName, className, methodName,
+								opp.getStartLineCluster(), opp.getEndLineCluster(),
+								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
+								method.getMetricIndexFromName("size"), classPath);
+					}
+				}
+			}
+			
+		} catch (OutOfMemoryError E) {
+			skippedFiles.add(file.getAbsolutePath());
+			return true;
+		}
+		return ret;
+	}
+	
 	private boolean doAnalysis(File file) {
 		// ***************************************************************************************************
 		// <

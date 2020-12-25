@@ -8,11 +8,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 public class DbController {
 
+	Lock globalInsertLock = new ReentrantLock();
+	
 	String path = "";
 	Connection conn = null;
 	MysqlDataSource dataSource = null;
@@ -141,7 +145,7 @@ public class DbController {
 				|| cohesion_benefit < 0 || line_start < 0 || line_end < 0 || line_start >= line_end || LoC <= 0) {
 			return false;
 		}
-
+		this.lock();
 		debCounter++;
 
 		this.projectName.add(projectName);
@@ -153,6 +157,7 @@ public class DbController {
 		this.cohesion_benefit.add(cohesion_benefit);
 		this.methodOriginalCohesion.add(methodOriginalCohesion);
 		this.LoC.add(LoC);
+		this.unlock();
 		return true;
 	}
 
@@ -314,7 +319,12 @@ public class DbController {
 		// >
 
 	}
-
+	public void lock() {
+		this.globalInsertLock.lock();
+	}
+	public void unlock() {
+		this.globalInsertLock.unlock();
+	}
 	public int getVersion() {
 		return version;
 	}
