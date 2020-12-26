@@ -4,11 +4,16 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import AST.ClassParser;
+import clustering.cluster.Opportunity;
 import db.DbController;
 import gui.Analyser;
+import gui.MethodOppExtractor;
+import gui.MethodOppExtractorSettings;
 import jarExecuteClass.parallelSemi.ActiveFiles;
 import jarExecuteClass.parallelSemi.SemiThread;
 import splitlongmethod.JavaClass;
+import splitlongmethod.Method;
 
 public class BasicController {
 
@@ -227,6 +232,113 @@ public class BasicController {
 
 	
 	private boolean doJavaAnalysis() {
+		boolean ret = true;
+		for(String filePath : this.filesForAnalysis.getFilePaths()) {
+			File file = new File(filePath);
+			ClassParser parser = new ClassParser(file.getAbsolutePath());
 		
+			parser.parse();
+			utils.Utilities.writeCSV("./" + file.getName() + "_original_parsed.txt", parser.getOutput(),
+					false);
+			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
+
+			try {
+				ret = ret && doAnalysis(file);
+			} catch (Exception e) {
+				System.out.println("File analysis failed, " + e.getMessage());
+				try {
+					File fileDel = new File("./" + file.getName() + "_parsed.txt");
+					fileDel.delete(); // ***POINT TEST_COM
+				} catch (Exception exc) {
+					System.out.println("Exception while deleting file");
+				}
+			}
+		}
+		return ret;
+	}
+
+	private MethodOppExtractorSettings settings = null;
+	private boolean doAnalysis(File file) {
+		// ***************************************************************************************************
+		// <
+		boolean ret = true;
+
+		analyser.setFile(file);
+
+		// classResults.add(analyser.performAnalysis()); //***TEMPCOM
+
+		try { // ***TEST
+			JavaClass clazz = analyser.performAnalysis();
+
+			for (int index = 0; index < clazz.getMethods().size(); index++) {
+				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
+
+				if (needsRefactoring) {
+
+					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {// skip methods with less
+																							// line
+																							// // of code
+						continue;
+					}
+					String className = file.getName().replaceFirst("./", "");
+					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
+					String methodName = clazz.getMethods().get(index).getName();
+					settings = new MethodOppExtractorSettings();
+					MethodOppExtractor extractor = new MethodOppExtractor(file, clazz.getMethods().get(index).getName(),
+							settings, clazz);
+
+					Method method = clazz.getMethods().getMethodByName(methodName);
+					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
+
+
+					int count = 1;
+					for (Opportunity opp : opportunities) {
+						if (count > 1) {
+							break;
+						}
+						number_of_refs++;
+						opps.add(className + "." + methodName + " -> " + opp.getStartLineCluster() + "-"
+								+ opp.getEndLineCluster() + " : " + opp.getOpportunityBenefitMetricByName("lcom2"));
+						ret = ret && dbCon.insertMethodToDatabase(projectName, className, methodName,
+								opp.getStartLineCluster(), opp.getEndLineCluster(),
+								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
+								method.getMetricIndexFromName("size"), classPath);
+						if(ret==false) {
+
+							System.out.println("********ERROR sto DB insert");
+							System.out.println("-----projectName "+projectName);
+							System.out.println("-----className "+className);
+							System.out.println("-----methodName "+methodName);
+							System.out.println("-----opp.getStartLineCluster() "+opp.getStartLineCluster());
+							System.out.println("-----opp.getEndLineCluster() "+opp.getEndLineCluster());
+							System.out.println("-----opp.lcom2 "+opp.getOpportunityBenefitMetricByName("lcom2"));
+							System.out.println("-----method.lcom2 "+method.getMetricIndexFromName("lcom2"));
+							System.out.println("-----method.loc "+method.getMetricIndexFromName("size"));
+							System.out.println("-----classPath "+classPath);
+						}
+						count++;
+					}
+				}
+			}
+		} catch (OutOfMemoryError E) {
+			skippedFiles.add(file.getAbsolutePath());
+			return true;
+		}
+		return ret;
+	}
+	
+	private String getMeCorrectNameFormat(String oldName) {
+		String retName = oldName.replace("\\", "/");
+		retName = retName.replace("\\", "/");
+
+		File file = new File(projectDirectoryPath);
+		String simpleFileName = file.getName();
+		String baseDirectory = projectDirectoryPath;// .replace(projectDirectoryPath, simpleFileName);
+		baseDirectory = baseDirectory.replace("\\", "/");
+		baseDirectory = baseDirectory.replace(simpleFileName, "");
+
+		retName = retName.replaceFirst(baseDirectory, "");
+
+		return retName;
 	}
 }

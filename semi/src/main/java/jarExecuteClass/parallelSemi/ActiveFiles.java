@@ -115,4 +115,8 @@ public class ActiveFiles {
 		//utils.Utilities.writeCSV("./" + file.getName() + "_original_parsed.txt", parser.getOutput(), false);
 		utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 	}
+
+	public ArrayList<String> getFilePaths() {
+		return filePaths;
+	}
 }
