@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import AST.ClassParser;
+
 public class ActiveFiles {
 //	private ArrayList<String> activeFiles = new ArrayList<String>();
 	ArrayList<String> filePaths = new ArrayList<String>();
@@ -26,10 +28,13 @@ public class ActiveFiles {
 		}
 	}
 
+	int debugFilesStarted = 0;
+	int debugFilesOriginal = 0;
 	public void addNewFile(String filePath) {
 		System.out.println("Inserting: " + filePath);
 		this.filePaths.add(filePath);
 		this.fileStatus.add(0);
+		debugFilesOriginal++;
 	}
 
 	public String giveMePathForAnalysis() {
@@ -53,6 +58,7 @@ public class ActiveFiles {
 			}
 			if(isFileAvailable) {
 				this.fileStatus.set(i, 1);
+				debugFilesStarted++;
 				this.unlock();
 				return this.filePaths.get(i);
 			}
@@ -92,5 +98,21 @@ public class ActiveFiles {
 
 	public void unlock() {
 		globalSumLock.unlock();
+	}
+	
+	public boolean debugAllGood() {
+		System.out.println("Num of files: "+debugFilesOriginal);
+		return debugFilesStarted==debugFilesOriginal;
+	}
+
+	
+//	Lock parseLock = new ReentrantLock();
+	ClassParser parser;
+	synchronized void parseDebug(File file) {
+		parser = new ClassParser(file.getAbsolutePath());
+
+		parser.parse();
+		//utils.Utilities.writeCSV("./" + file.getName() + "_original_parsed.txt", parser.getOutput(), false);
+		utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 	}
 }

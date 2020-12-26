@@ -52,7 +52,7 @@ public class BasicController {
 		dbCon = new DbController(dbCredPath);
 		if (!dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			//return; // ***POINT TEST_COM
+//			return; // ***POINT TEST_COM
 		}
 		this.projectProgramingLanguage = type;
 		this.projectName = projectName;
@@ -66,7 +66,7 @@ public class BasicController {
 		System.out.println("expStarted"); // ***DEBUG
 		if (this.dbCon == null || !this.dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			//return false; // ***POINT TEST_COM
+//			return false; // ***POINT TEST_COM
 		}
 
 		dbCon.closeConn();
@@ -79,10 +79,6 @@ public class BasicController {
 		if (!commit) {
 			System.out.println("Something went wrong with the file analysis");
 			return false;
-		}
-
-		for (String ss : opps) {
-			System.out.println(ss);
 		}
 
 		writeLogSkippedFiles();
@@ -118,6 +114,8 @@ public class BasicController {
 
 		if (projectProgramingLanguage.equals("java")) {
 			getFilesForAnalysis_Java_TEMP(projectDirectoryPath);
+			//TODO do parallel part for java
+			return doJavaAnalysis();
 		} else if (projectProgramingLanguage.equals("c") || projectProgramingLanguage.equals("cpp")) {
 			getFilesForAnalysis_C_TEMP(projectDirectoryPath);
 		} else {
@@ -144,10 +142,24 @@ public class BasicController {
 			} catch (InterruptedException e) {
 			}
 		}
+		System.out.println("after join\n\n");
+		
+		for(String sss : opps) {
+			System.out.println("GLOB_opp: "+sss);
+		}
+		
+		System.out.println("\s\s");
 		boolean result = true;
 		for (int t = 0; t < threadNum; t++) {
 			result = result && threads[t].isSuccessful();
 		}
+		
+		for (int t = 0; t < threadNum; t++) {
+			threads[t].debug();
+		}
+		
+		System.out.println("ACT ALL GOOD?: "+filesForAnalysis.debugAllGood());
+		
 		return result;
 	}
 
@@ -213,4 +225,8 @@ public class BasicController {
 		}
 	}
 
+	
+	private boolean doJavaAnalysis() {
+		
+	}
 }

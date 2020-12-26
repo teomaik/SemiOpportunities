@@ -76,12 +76,19 @@ public class mainOpps {
 		String dbPath = "C:\\Users\\temp\\Documents\\GitHub\\Workspace\\Uo\\dbCredentials_uom.txt";
 
 		String prjPath = "";
-		prjPath = "C:\\Users\\Maik\\Downloads\\kameleon2\\base\\src";
 		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
 		// prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
 		// prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
 		prjPath = "C:\\Users\\temp\\Downloads\\jcommander-main";
 
+//		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
+//		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
+		
+//		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
+//		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
+
+		
+		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\DeRec-GEA";
 		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
 
 		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT
