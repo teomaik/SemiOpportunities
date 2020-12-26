@@ -1,9 +1,0 @@
-Usage#com.beust.jcommander.internal#1;
-Usage#com.beust.jcommander#1;
-Usage#com.beust#1;
-Method:print(String);
-parameter#msg;
-Method:println(String);
-parameter#msg;
-Method:readPassword(boolean);
-parameter#echoInput;

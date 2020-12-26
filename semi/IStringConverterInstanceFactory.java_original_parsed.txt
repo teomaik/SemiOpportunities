@@ -1,6 +1,0 @@
-Usage#com.beust.jcommander#1;
-Usage#com.beust#1;
-Method:getConverterInstance(Parameter,Class<?>,String);
-parameter#parameter;
-parameter#forType;
-parameter#optionName;
