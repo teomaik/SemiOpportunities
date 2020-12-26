@@ -82,7 +82,7 @@ public class ActiveFiles {
 //		}
 		//printFilesAndStatus();
 		this.unlock();
-		return true;
+		return false;
 	}
 
 	public void finishedFileAnaysis(String file_path) {

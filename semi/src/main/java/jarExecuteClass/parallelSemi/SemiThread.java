@@ -26,12 +26,10 @@ public class SemiThread extends Thread {
 	private String projectName;
 	private ArrayList<String> skippedFiles;
 	private String projectDirectoryPath;
-	
+
 	private boolean success = true;
 	private MethodOppExtractorSettings settings = null;
 
-	
-	
 	public SemiThread(ActiveFiles filesForAnalysis, String selected_metric, String progrLang, ArrayList<String> opps,
 			DbController dbCon, String projectName, ArrayList<String> skippedFiles, String projectDirectoryPath) {
 		super();
@@ -43,7 +41,7 @@ public class SemiThread extends Thread {
 		this.projectName = projectName;
 		this.skippedFiles = skippedFiles;
 		this.projectDirectoryPath = projectDirectoryPath;
-		
+
 		this.start();
 	}
 
@@ -62,36 +60,39 @@ public class SemiThread extends Thread {
 	private ArrayList<String> methodsForAnalysis = new ArrayList<String>();
 	ClassParser parser;
 	Utilities writer = new Utilities();
-	
+
 	private ArrayList<String> localopps = new ArrayList<String>();
+
 	private boolean doParallelAnalysis(String filePath) {
 		boolean ret = true;
 
 		File file = new File(filePath);
-		
+
 		if (progrLang.equals("java")) {
-			
+
 //			synchronized(parser = new ClassParser(file.getAbsolutePath())){
-//				parser.parse();
+//
+			synchronized (this.getClass()) {
+				this.parser = new ClassParser(file.getAbsolutePath());
+				parser.parse();
+				utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 //				synchronized(writer){
 //					writer.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 //			      }
-//		      }
-			
+			}
+
 //			filesForAnalysis.parseDebug(file);
-			
-			
-			
+
 //			return false;
-			
-			ClassParser parser = new ClassParser(file.getAbsolutePath());
-			parser.parse();
-			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
+
+//			ClassParser parser = new ClassParser(file.getAbsolutePath());
+//			parser.parse();
+//			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 
 		} else if (progrLang.equals("c") || progrLang.equals("cpp")) {
 			CodeFile tempFile = new cFile(file);
 			tempFile.parse();
-		}else {
+		} else {
 			return false;
 		}
 
@@ -104,15 +105,15 @@ public class SemiThread extends Thread {
 
 			for (int index = 0; index < clazz.getMethods().size(); index++) {
 				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
-				
+
 				if (needsRefactoring) {
-					
+
 					// skip methods with less line of code
 					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {
 						continue;
 					}
-					
-					alayzedMethods.add(filePath+"/"+clazz.getMethods().get(index).getName()+"");
+
+					alayzedMethods.add(filePath + "/" + clazz.getMethods().get(index).getName() + "");
 					String className = file.getName().replaceFirst("./", "");
 					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
 					String methodName = clazz.getMethods().get(index).getName();
@@ -135,7 +136,7 @@ public class SemiThread extends Thread {
 								method.getMetricIndexFromName("size"), classPath);
 					}
 
-					//alayzedFaliedMethods.remove(alayzedFaliedMethods.size()-1);
+					// alayzedFaliedMethods.remove(alayzedFaliedMethods.size()-1);
 				}
 			}
 
@@ -164,12 +165,12 @@ public class SemiThread extends Thread {
 	}
 
 	public boolean isSuccessful() {
-		for(String s : localopps) {
-			System.out.println("opp_loc: "+s);
+		for (String s : localopps) {
+			System.out.println("opp_loc: " + s);
 		}
 		return success;
 	}
-	
+
 	public void debug() {
 //		for(String s : alayzedMethods) {
 //			System.out.println("Methods analyzed: "+s);
