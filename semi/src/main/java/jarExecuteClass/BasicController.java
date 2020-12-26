@@ -3,18 +3,12 @@ package jarExecuteClass;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
 
-import AST.ClassParser;
-import clustering.cluster.Opportunity;
 import db.DbController;
 import gui.Analyser;
-import gui.MethodOppExtractor;
-import gui.MethodOppExtractorSettings;
-import parsers.CodeFile;
-import parsers.cFile;
+import jarExecuteClass.parallelSemi.ActiveFiles;
+import jarExecuteClass.parallelSemi.SemiThread;
 import splitlongmethod.JavaClass;
-import splitlongmethod.Method;
 
 public class BasicController {
 
@@ -58,7 +52,7 @@ public class BasicController {
 		dbCon = new DbController(dbCredPath);
 		if (!dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			return; // ***POINT TEST_COM
+			//return; // ***POINT TEST_COM
 		}
 		this.projectProgramingLanguage = type;
 		this.projectName = projectName;
@@ -72,28 +66,12 @@ public class BasicController {
 		System.out.println("expStarted"); // ***DEBUG
 		if (this.dbCon == null || !this.dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
-			return false; // ***POINT TEST_COM
+			//return false; // ***POINT TEST_COM
 		}
 
 		dbCon.closeConn();
 
-		boolean commit = true;
-
-		System.out.println("b-sw"); // ***DEBUG
-		switch (projectProgramingLanguage) {
-		case "java":
-			commit = doAnalysis_Java(projectDirectoryPath);
-			break;
-		case "c":
-			commit = doAnalysis_C_Cpp(projectDirectoryPath);
-			break;
-		case "cpp":
-			commit = doAnalysis_C_Cpp(projectDirectoryPath);
-			break;
-		default:
-			System.out.println("wrong argument for Programing Language (java, c, f, f90)");
-		}
-
+		boolean commit = getFilesForAnalysis();
 
 		if (!commit) {
 			System.out.println("Something went wrong with the file analysis");
@@ -125,179 +103,49 @@ public class BasicController {
 		}
 	}
 
-	private String getMeCorrectNameFormat(String oldName) {
-		String retName = oldName.replace("\\", "/");
-		retName = retName.replace("\\", "/");
-
-		File file = new File(projectDirectoryPath);
-		String simpleFileName = file.getName();
-		String baseDirectory = projectDirectoryPath;// .replace(projectDirectoryPath, simpleFileName);
-		baseDirectory = baseDirectory.replace("\\", "/");
-		baseDirectory = baseDirectory.replace(simpleFileName, "");
-
-		retName = retName.replaceFirst(baseDirectory, "");
-
-		// TEST <
-		// System.out.println("projectDirectoryPath: "+this.projectDirectoryPath);
-		// System.out.println("File.separator: "+File.separator);
-		// System.out.println("simpleFileName: "+simpleFileName);
-		// System.out.println("oldName: "+oldName);
-		// System.out.println("retName: "+retName);
-		// Toolkit.getDefaultToolkit().beep();
-		// promptEnterKey(); //***DEBUG
-		// TEST >
-
-		return retName;
-	}
-
-	public void promptEnterKey() {
-		System.out.println("Press \"ENTER\" to continue...");
-		Scanner scanner = new Scanner(System.in);
-		scanner.nextLine();
-	}
-
-	MethodOppExtractorSettings settings = null;
-
 	ArrayList<String> opps = new ArrayList<String>();
 
-	int needsRef = 0;
-	int skippedRefs = 0;
-	int dbA = 0;
-	int dbB = 0;
-	int beforeRef = 0;
+	private ActiveFiles filesForAnalysis = new ActiveFiles();
 
-	private boolean doParallelAnalysis(File file) {
-		boolean ret = true;
-		
-		Analyser analyser = new Analyser();
-		analyser.setFile(file);
-		
-		try {
-			
-			JavaClass clazz = analyser.performAnalysis();
-
-			for (int index = 0; index < clazz.getMethods().size(); index++) {
-				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
-
-				if (needsRefactoring) {
-					needsRef++;
-
-					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {// skip methods with less
-																							// line
-																							// // of code
-						continue;
-					}
-					String className = file.getName().replaceFirst("./", "");
-					dbA++;
-					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
-					dbB++;
-					String methodName = clazz.getMethods().get(index).getName();
-					settings = new MethodOppExtractorSettings();
-					MethodOppExtractor extractor = new MethodOppExtractor(file, clazz.getMethods().get(index).getName(),
-							settings, clazz);
-
-					Method method = clazz.getMethods().getMethodByName(methodName);
-					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
-
-					beforeRef++;
-
-					int count = 1;
-					if(opportunities.size()>0) {
-						Opportunity opp = opportunities.get(0);
-						opps.add(className + "." + methodName + " -> " + opp.getStartLineCluster() + "-"
-								+ opp.getEndLineCluster() + " : " + opp.getOpportunityBenefitMetricByName("lcom2"));
-						ret = ret && dbCon.insertMethodToDatabase(projectName, className, methodName,
-								opp.getStartLineCluster(), opp.getEndLineCluster(),
-								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
-								method.getMetricIndexFromName("size"), classPath);
-					}
-				}
-			}
-			
-		} catch (OutOfMemoryError E) {
-			skippedFiles.add(file.getAbsolutePath());
-			return true;
-		}
-		return ret;
-	}
-	
-	private boolean doAnalysis(File file) {
-		// ***************************************************************************************************
-		// <
-		boolean ret = true;
-
-		analyser.setFile(file);
-
-		// classResults.add(analyser.performAnalysis()); //***TEMPCOM
-
-		try { // ***TEST
-			JavaClass clazz = analyser.performAnalysis();
-
-			for (int index = 0; index < clazz.getMethods().size(); index++) {
-				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
-
-				if (needsRefactoring) {
-					needsRef++;
-
-					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {// skip methods with less
-																							// line
-																							// // of code
-						continue;
-					}
-					String className = file.getName().replaceFirst("./", "");
-					dbA++;
-					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
-					dbB++;
-					String methodName = clazz.getMethods().get(index).getName();
-					settings = new MethodOppExtractorSettings();
-					MethodOppExtractor extractor = new MethodOppExtractor(file, clazz.getMethods().get(index).getName(),
-							settings, clazz);
-
-					Method method = clazz.getMethods().getMethodByName(methodName);
-					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
-
-					beforeRef++;
-
-					int count = 1;
-					for (Opportunity opp : opportunities) {
-						skippedRefs++;
-						if (count > 1) {
-							break;
-						}
-						number_of_refs++;
-						opps.add(className + "." + methodName + " -> " + opp.getStartLineCluster() + "-"
-								+ opp.getEndLineCluster() + " : " + opp.getOpportunityBenefitMetricByName("lcom2"));
-						ret = ret && dbCon.insertMethodToDatabase(projectName, className, methodName,
-								opp.getStartLineCluster(), opp.getEndLineCluster(),
-								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
-								method.getMetricIndexFromName("size"), classPath);
-						if(ret==false) {
-
-							System.out.println("********ERROR sto DB insert");
-							System.out.println("-----projectName "+projectName);
-							System.out.println("-----className "+className);
-							System.out.println("-----methodName "+methodName);
-							System.out.println("-----opp.getStartLineCluster() "+opp.getStartLineCluster());
-							System.out.println("-----opp.getEndLineCluster() "+opp.getEndLineCluster());
-							System.out.println("-----opp.lcom2 "+opp.getOpportunityBenefitMetricByName("lcom2"));
-							System.out.println("-----method.lcom2 "+method.getMetricIndexFromName("lcom2"));
-							System.out.println("-----method.loc "+method.getMetricIndexFromName("size"));
-							System.out.println("-----classPath "+classPath);
-						}
-						count++;
-					}
-				}
-			}
-		} catch (OutOfMemoryError E) {
-			skippedFiles.add(file.getAbsolutePath());
-			return true;
+	private boolean getFilesForAnalysis() {
+		File directory = new File(projectDirectoryPath);
+		if (!directory.exists() || !directory.isDirectory()) {
+			return false;
 		}
 
-		// File fileDel = new File("./" + file.getName() + "_parsed.txt");
-		// fileDel.delete();
-		// >
-		// ***************************************************************************************************
-		return ret;
+		if (projectProgramingLanguage.equals("java")) {
+			getFilesForAnalysis_Java_TEMP(projectDirectoryPath);
+		} else if (projectProgramingLanguage.equals("c") || projectProgramingLanguage.equals("cpp")) {
+			getFilesForAnalysis_C_TEMP(projectDirectoryPath);
+		} else {
+			System.out.println("Wrong programing language. Only java, c or cpp are supported");
+			return false;
+		}
+
+		int threadNum = Runtime.getRuntime().availableProcessors();
+		if (threadNum <= 0) {
+			System.out.println("Unexpected error, trouble determining thread number");
+			System.exit(1);
+		}
+
+		SemiThread[] threads = new SemiThread[threadNum];
+		for (int t = 1; t < threadNum; t++) {
+			threads[t] = new SemiThread(filesForAnalysis, selected_metric, projectProgramingLanguage, opps, dbCon,
+					projectName, skippedFiles, projectDirectoryPath);
+			// System.out.println(t+"---> start:" + start + ", end:" + end);
+		}
+
+		for (int t = 0; t < threadNum; t++) {
+			try {
+				threads[t].join();
+			} catch (InterruptedException e) {
+			}
+		}
+		boolean result = true;
+		for (int t = 0; t < threadNum; t++) {
+			result = result && threads[t].isSuccessful();
+		}
+		return result;
 	}
 
 	private ArrayList<String> skippedFiles = new ArrayList<String>();
@@ -316,17 +164,7 @@ public class BasicController {
 		}
 	}
 
-	private boolean doAnalysis_Java(String directoryName) {
-		File directory = new File(directoryName);
-		if (!directory.exists() || !directory.isDirectory()) {
-			return false;
-		}
-		return getFilesForAnalysis_Java(projectDirectoryPath);
-	}
-
-	private boolean getFilesForAnalysis_Java(String directoryPath) {
-
-		boolean ret = true;
+	private void getFilesForAnalysis_Java_TEMP(String directoryPath) {
 
 		File directory = new File(directoryPath);
 
@@ -338,120 +176,38 @@ public class BasicController {
 					String[] str = file.getName().split("\\.");
 					// For all the filles of this dirrecory get the extension
 					if (str[str.length - 1].equalsIgnoreCase("java")) {
-						java_source_files.add(file);
-
-						ClassParser parser = new ClassParser(file.getAbsolutePath());
-						// try {
-						// parser.parse();
-						// }catch(Exception e) {
-						// System.out.println("Exception during parse");
-						// parser.parse();
-						// }
-						parser.parse();
-						utils.Utilities.writeCSV("./" + file.getName() + "_original_parsed.txt", parser.getOutput(),
-								false);
-						utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
-
-						// ExtraParseUtils asd = new ExtraParseUtils();
-						// asd.convertSimpleIfsToLine("./"+file.getName()+"_parsed.txt");
-
-						// ***************************************************************************************************
-						// <
-						try {
-							ret = ret && doAnalysis(file);
-						} catch (Exception e) {
-							System.out.println("File analysis failed, " + e.getMessage());
-							try {
-								File fileDel = new File("./" + file.getName() + "_parsed.txt");
-								fileDel.delete(); // ***POINT TEST_COM
-							} catch (Exception exc) {
-								System.out.println("Exception while deleting file");
-							}
-						}
-						// >
-						// ***************************************************************************************************
+						filesForAnalysis.addNewFile(file.getAbsolutePath());
 					}
 				} else if (file.isDirectory()) {
-					ret = ret && getFilesForAnalysis_Java(file.getAbsolutePath());
+					getFilesForAnalysis_Java_TEMP(file.getAbsolutePath());
 				}
 			}
 		}
-		return ret;
 	}
 
-	private boolean doAnalysis_C_Cpp(String directoryName) {
-		File directory = new File(directoryName);
-		if (!directory.exists() || !directory.isDirectory()) {
-			return false;
-		}
-		return getFilesForAnalysis_C(projectDirectoryPath);
-	}
-
-	private boolean getFilesForAnalysis_C(String directoryName) {
-		System.out.println("directory name = " + directoryName);
-		boolean ret = true;
+	private void getFilesForAnalysis_C_TEMP(String directoryName) {
 		File directory = new File(directoryName);
 		// Get all files from a directory.
 		File[] fList = directory.listFiles();
 		if (fList != null) {
 			for (File file : fList) {
 				if (file.isFile() && file.getName().contains(".") && file.getName().charAt(0) != '.') {
-
-					System.out.println("********* file is Source file");
-					try {
-						String[] str = file.getName().split("\\.");
-						// For all the filles of this dirrecory get the extension
-
-						if ((str[str.length - 1].equalsIgnoreCase("c")) || (str[str.length - 1].equalsIgnoreCase("cpp"))
-								|| (str[str.length - 1].equalsIgnoreCase("cc"))
-								|| (str[str.length - 1].equalsIgnoreCase("cp"))
-								|| (str[str.length - 1].equalsIgnoreCase("cxx"))
-								|| (str[str.length - 1].equalsIgnoreCase("c++"))
-								|| (str[str.length - 1].equalsIgnoreCase("cu"))) {
-
-							CodeFile tempFile = new cFile(file);
-							// new cFileNew(file);
-
-							System.out.println("***DEBUG 'c' Parsing: " + file.getName());
-
-							tempFile.parse();
-
-							// ***TEST ***DEBUG < allazei to arxeio parsed.txt kai enonei ta "mikra" IF
-							// //***POINT TEST_COM
-
-							// ExtraParseUtils asd = new ExtraParseUtils();
-							// asd.convertSimpleIfsToLine("./"+file.getName()+"_parsed.txt");
-							// ***TEST ***DEBUG >
-
-							// ***************************************************************************************************
-							// <
-							try {
-								ret = ret && doAnalysis(file);
-							} catch (Exception e) {
-								System.out.println("File analysis failed, " + e.getMessage());
-								try {
-									File fileDel = new File("./" + file.getName() + "_parsed.txt");
-									fileDel.delete(); // ***POINT TEST_COM
-								} catch (Exception exc) {
-									System.out.println("Exception while deleting file");
-								}
-							}
-
-							// >
-							// ***************************************************************************************************
-						}
-					} catch (OutOfMemoryError E) {
-						System.out.println("Out of Memory for file: " + file.getAbsolutePath());
-						skippedFiles.add(file.getAbsolutePath());
+					String[] str = file.getName().split("\\.");
+					if ((str[str.length - 1].equalsIgnoreCase("c")) || (str[str.length - 1].equalsIgnoreCase("cpp"))
+							|| (str[str.length - 1].equalsIgnoreCase("cc"))
+							|| (str[str.length - 1].equalsIgnoreCase("cp"))
+							|| (str[str.length - 1].equalsIgnoreCase("cxx"))
+							|| (str[str.length - 1].equalsIgnoreCase("c++"))
+							|| (str[str.length - 1].equalsIgnoreCase("cu"))) {
+						filesForAnalysis.addNewFile(file.getAbsolutePath());
 					}
+
 				} else if (file.isDirectory()) {
 					System.out.println("********* file is folder");
-					ret = ret && getFilesForAnalysis_C(file.getAbsolutePath());
+					getFilesForAnalysis_C_TEMP(file.getAbsolutePath());
 				}
 			}
 		}
-
-		return ret;
 	}
 
 }

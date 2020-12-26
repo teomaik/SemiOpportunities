@@ -11,12 +11,12 @@ public class mainOpps {
 //***DEBUG ***TEST <
 		doEndStuff();
 
-		boolean test = false;
+		boolean test = true;
 		if (test) {
 			test = testThings(); // ***POINT TEST_COM
 			return;
 		}
-		//doEndStuff();
+		// doEndStuff();
 
 //***DEBUG ***TEST >
 
@@ -72,18 +72,20 @@ public class mainOpps {
 
 		// BasicController controller = new BasicController("java", "test", "222",
 		// "/home/anon/Downloads/testNikos/_testFolder", "nosd");
-		
+
+		String dbPath = "C:\\Users\\temp\\Documents\\GitHub\\Workspace\\Uo\\dbCredentials_uom.txt";
+
 		String prjPath = "";
 		prjPath = "C:\\Users\\Maik\\Downloads\\kameleon2\\base\\src";
 		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
-		//prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
-		//prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
-		prjPath = "C:\\Users\\temp\\Downloads\\delete\\fastjson-master\\src";
-		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath,
-				"nodb");
+		// prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
+		// prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
+		prjPath = "C:\\Users\\temp\\Downloads\\jcommander-main";
 
-		boolean result = ctrl.runExperiment();	//***TEMP_COMMENT
-		
+		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
+
+		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT
+
 		doEndStuff(); // ***POINT TEST_COM diagrfei ta _parsed arxeia.
 		System.out.println("Telos to test!!!!");
 		if (result) {

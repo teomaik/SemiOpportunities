@@ -1,0 +1,15 @@
+Usage#com.beust.jcommander.args#1;
+Usage#com.beust.jcommander#1;
+Usage#com.beust#1;
+Usage#com.beust.jcommander.Parameter#2;
+Usage#com.beust.jcommander.Parameter#3;
+Usage#com.beust.jcommander#2;
+Usage#com.beust.jcommander#3;
+Usage#com.beust#2;
+Usage#com.beust#3;
+Declaration#pattern#7;
+Usage#pattern#8;
+Usage#pattern#9;
+Declaration#filler#10;
+Usage#filler#11;
+Usage#filler#12;

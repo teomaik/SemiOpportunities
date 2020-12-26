@@ -1,0 +1,10 @@
+Usage#com.beust.jcommander.converters#1;
+Usage#com.beust.jcommander#1;
+Usage#com.beust#1;
+Method:split(String);
+parameter#value;
+Return#null#9;
+Usage#value#9;
+Invocation#value.split#9;
+Usage#value#9;
+Invocation#value.split#9;

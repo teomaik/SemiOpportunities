@@ -26,7 +26,7 @@ public class ActiveFiles {
 		}
 	}
 
-	public void putNewFile(String filePath) {
+	public void addNewFile(String filePath) {
 		System.out.println("Inserting: " + filePath);
 		this.filePaths.add(filePath);
 		this.fileStatus.add(0);
