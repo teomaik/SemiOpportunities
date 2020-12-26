@@ -69,7 +69,6 @@ public class SemiThread extends Thread {
 
 		File file = new File(filePath);
 		
-		//progrLang will never equal java
 		if (progrLang.equals("java")) {
 			
 //			synchronized(parser = new ClassParser(file.getAbsolutePath())){
@@ -112,6 +111,7 @@ public class SemiThread extends Thread {
 					if (clazz.getMethods().get(index).getMetricIndexFromName("size") < 50) {
 						continue;
 					}
+					
 					alayzedMethods.add(filePath+"/"+clazz.getMethods().get(index).getName()+"");
 					String className = file.getName().replaceFirst("./", "");
 					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());

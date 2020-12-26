@@ -75,9 +75,14 @@ public class ActiveFiles {
 			this.unlock();
 			return true;
 		}
+//		for(int i=0; i<this.fileStatus.size(); i++) {
+//			if(this.fileStatus.get(i).intValue()!=2)
+//				this.unlock();
+//				return false;
+//		}
 		//printFilesAndStatus();
 		this.unlock();
-		return false;
+		return true;
 	}
 
 	public void finishedFileAnaysis(String file_path) {
