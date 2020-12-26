@@ -88,7 +88,7 @@ public class mainOpps {
 //		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
 
 		
-		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\DeRec-GEA";
+//		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\DeRec-GEA";
 		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
 
 		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT

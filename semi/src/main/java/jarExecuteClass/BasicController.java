@@ -120,7 +120,7 @@ public class BasicController {
 		if (projectProgramingLanguage.equals("java")) {
 			getFilesForAnalysis_Java_TEMP(projectDirectoryPath);
 			//TODO do parallel part for java
-			return doJavaAnalysis();
+			//return doJavaAnalysis();
 		} else if (projectProgramingLanguage.equals("c") || projectProgramingLanguage.equals("cpp")) {
 			getFilesForAnalysis_C_TEMP(projectDirectoryPath);
 		} else {

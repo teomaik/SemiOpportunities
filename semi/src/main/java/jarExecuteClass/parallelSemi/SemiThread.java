@@ -82,12 +82,12 @@ public class SemiThread extends Thread {
 //			filesForAnalysis.parseDebug(file);
 			
 			
-			return false;
 			
+//			return false;
 			
-//			ClassParser parser = new ClassParser(file.getAbsolutePath());
-//			parser.parse();
-//			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
+			ClassParser parser = new ClassParser(file.getAbsolutePath());
+			parser.parse();
+			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 
 		} else if (progrLang.equals("c") || progrLang.equals("cpp")) {
 			CodeFile tempFile = new cFile(file);
