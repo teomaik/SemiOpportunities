@@ -132,7 +132,7 @@ public class BasicController {
 		}
 
 		SemiThread[] threads = new SemiThread[threadNum];
-		for (int t = 1; t < threadNum; t++) {
+		for (int t = 0; t < threadNum; t++) {
 			threads[t] = new SemiThread(filesForAnalysis, selected_metric, projectProgramingLanguage, opps, dbCon,
 					projectName, skippedFiles, projectDirectoryPath);
 			// System.out.println(t+"---> start:" + start + ", end:" + end);
