@@ -72,6 +72,9 @@ public class BasicController {
 		dbCon.closeConn();
 
 		boolean commit = getFilesForAnalysis();
+		
+//		int debug=0;
+//		debug = 1/debug;
 
 		if (!commit) {
 			System.out.println("Something went wrong with the file analysis");

@@ -47,15 +47,14 @@ public class SemiThread extends Thread {
 	}
 
 	public void run() {
-
 		while (!filesForAnalysis.areWeDone()) {
 			String filePathForAnalysis = filesForAnalysis.giveMePathForAnalysis();
 			if (filePathForAnalysis == null) {
 				continue;
 			}
+			filesForAnalysis.finishedFileAnaysis(filePathForAnalysis);
 			success = success && doParallelAnalysis(filePathForAnalysis);
 		}
-
 	}
 
 	private boolean doParallelAnalysis(String filePath) {
@@ -99,7 +98,6 @@ public class SemiThread extends Thread {
 					Method method = clazz.getMethods().getMethodByName(methodName);
 					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
 
-					int count = 1;
 					if (opportunities.size() > 0) {
 						Opportunity opp = opportunities.get(0);
 						opps.add(className + "." + methodName + " -> " + opp.getStartLineCluster() + "-"

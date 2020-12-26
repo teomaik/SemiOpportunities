@@ -59,6 +59,7 @@ public class ActiveFiles {
 		}
 
 		this.unlock();
+		//System.out.println("Returning null path");
 		return null;
 	}
 
@@ -68,7 +69,7 @@ public class ActiveFiles {
 			this.unlock();
 			return true;
 		}
-
+		//printFilesAndStatus();
 		this.unlock();
 		return false;
 	}
