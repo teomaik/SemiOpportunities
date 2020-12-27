@@ -11,7 +11,7 @@ public class mainOpps {
 //***DEBUG ***TEST <
 		doEndStuff();
 
-		boolean test = true;
+		boolean test = false;
 		if (test) {
 			test = testThings(); // ***POINT TEST_COM
 			return;
@@ -82,14 +82,14 @@ public class mainOpps {
 		prjPath = "C:\\Users\\temp\\Downloads\\jcommander-main";
 
 //		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
-//		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
+		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
 		
 //		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
-//		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
+		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
 
 		
 //		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\DeRec-GEA";
-		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
+//		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
 
 		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT
 

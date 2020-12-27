@@ -68,18 +68,17 @@ public class SemiThread extends Thread {
 
 		File file = new File(filePath);
 
-		if (progrLang.equals("java")) {
+		synchronized (this.getClass()) {
+			if (progrLang.equals("java")) {
 
 //			synchronized(parser = new ClassParser(file.getAbsolutePath())){
 //
-			synchronized (this.getClass()) {
 				this.parser = new ClassParser(file.getAbsolutePath());
 				parser.parse();
 				utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 //				synchronized(writer){
 //					writer.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 //			      }
-			}
 
 //			filesForAnalysis.parseDebug(file);
 
@@ -89,11 +88,12 @@ public class SemiThread extends Thread {
 //			parser.parse();
 //			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 
-		} else if (progrLang.equals("c") || progrLang.equals("cpp")) {
-			CodeFile tempFile = new cFile(file);
-			tempFile.parse();
-		} else {
-			return false;
+			} else if (progrLang.equals("c") || progrLang.equals("cpp")) {
+				CodeFile tempFile = new cFile(file);
+				tempFile.parse();
+			} else {
+				return false;
+			}
 		}
 
 		Analyser analyser = new Analyser();
