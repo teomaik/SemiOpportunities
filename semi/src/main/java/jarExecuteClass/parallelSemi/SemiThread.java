@@ -70,23 +70,9 @@ public class SemiThread extends Thread {
 
 		synchronized (this.getClass()) {
 			if (progrLang.equals("java")) {
-
-//			synchronized(parser = new ClassParser(file.getAbsolutePath())){
-//
 				this.parser = new ClassParser(file.getAbsolutePath());
 				parser.parse();
 				utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
-//				synchronized(writer){
-//					writer.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
-//			      }
-
-//			filesForAnalysis.parseDebug(file);
-
-//			return false;
-
-//			ClassParser parser = new ClassParser(file.getAbsolutePath());
-//			parser.parse();
-//			utils.Utilities.writeCSV("./" + file.getName() + "_parsed.txt", parser.getOutput(), false);
 
 			} else if (progrLang.equals("c") || progrLang.equals("cpp")) {
 				CodeFile tempFile = new cFile(file);
@@ -135,8 +121,6 @@ public class SemiThread extends Thread {
 								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
 								method.getMetricIndexFromName("size"), classPath);
 					}
-
-					// alayzedFaliedMethods.remove(alayzedFaliedMethods.size()-1);
 				}
 			}
 
@@ -165,16 +149,7 @@ public class SemiThread extends Thread {
 	}
 
 	public boolean isSuccessful() {
-		for (String s : localopps) {
-			System.out.println("opp_loc: " + s);
-		}
 		return success;
-	}
-
-	public void debug() {
-//		for(String s : alayzedMethods) {
-//			System.out.println("Methods analyzed: "+s);
-//		}
 	}
 
 }

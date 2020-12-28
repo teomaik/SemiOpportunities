@@ -8,22 +8,9 @@ public class mainOpps {
 
 	public static void main(String[] args) {
 
-//***DEBUG ***TEST <
-		doEndStuff();
-
-		boolean test = false;
-		if (test) {
-			test = testThings(); // ***POINT TEST_COM
-			return;
-		}
-		// doEndStuff();
-
-//***DEBUG ***TEST >
-
 		if (args.length != 5) {
 			System.out.println("Wrong number of arguments");
-			System.out.println("You need to provide 5 arguments: " + "\n1: programming language (java, c, cpp)"// , f,
-																												// f90)"
+			System.out.println("You need to provide 5 arguments: " + "\n1: programming language (java, c, cpp)"
 					+ "\n2: project name" + "\n3: project version" + "\n4: path to project directory"
 					+ "\n5: path to database credential file");
 			System.exit(1);
@@ -64,46 +51,6 @@ public class mainOpps {
 				fileList[i].delete();
 			}
 		}
-	}
-
-	public static boolean testThings() {
-		long start = System.currentTimeMillis();
-		long end;
-
-		// BasicController controller = new BasicController("java", "test", "222",
-		// "/home/anon/Downloads/testNikos/_testFolder", "nosd");
-
-		String dbPath = "C:\\Users\\temp\\Documents\\GitHub\\Workspace\\Uo\\dbCredentials_uom.txt";
-
-		String prjPath = "";
-		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
-		// prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
-		// prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
-		prjPath = "C:\\Users\\temp\\Downloads\\jcommander-main";
-
-//		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
-		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
-		
-//		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
-		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
-
-		
-//		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\DeRec-GEA";
-//		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
-
-		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT
-
-		doEndStuff(); // ***POINT TEST_COM diagrfei ta _parsed arxeia.
-		System.out.println("Telos to test!!!!");
-		if (result) {
-			System.out.println("Executed correctly");
-		} else {
-			System.out.println("There was an error");
-		}
-		end = System.currentTimeMillis();
-		System.out.println("Total Time: " + ((end - start) / 1000) / 60 + " minutes");
-		return true;
-
 	}
 
 }
