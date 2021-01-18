@@ -35,6 +35,7 @@ public class mainTest {
 		
 		prjPath = "C:\\Users\\temp\\Downloads\\rodinia-master";
 //		prjPath = "C:\\Users\\temp\\Downloads\\kameleon2";
+		prjPath = "C:\\Users\\temp\\Documents\\GitHub\\Workspace\\UoM\\SDK4ED\\_Partners\\Neurasmus8\\imd-emulator";
 		BasicController ctrl = new BasicController("cpp", "TestPrj", "0", prjPath, dbPath);
 
 		

@@ -47,13 +47,19 @@ public class SemiThread extends Thread {
 
 	public void run() {
 		while (!filesForAnalysis.areWeDone()) {
+
+			System.out.println("Getting new file for analysis");
 			String filePathForAnalysis = filesForAnalysis.giveMePathForAnalysis();
 			if (filePathForAnalysis == null) {
 				continue;
 			}
 			filesForAnalysis.finishedFileAnaysis(filePathForAnalysis);
+
+			System.out.println("Starting analysis");
 			success = success && doParallelAnalysis(filePathForAnalysis);
 		}
+		
+		System.out.println("Thread finished, analysis_finished: "+filesForAnalysis.areWeDone());
 	}
 
 	private ArrayList<String> alayzedMethods = new ArrayList<String>();
@@ -86,10 +92,12 @@ public class SemiThread extends Thread {
 		analyser.setFile(file);
 
 		try {
-
+			System.out.println("Starting analysis");
 			JavaClass clazz = analyser.performAnalysis();
+			System.out.println("Finished analysis");
 
 			for (int index = 0; index < clazz.getMethods().size(); index++) {
+				System.out.println("Checking method : " + index);
 				boolean needsRefactoring = clazz.getMethods().get(index).needsRefactoring(selected_metric);
 
 				if (needsRefactoring) {
@@ -104,11 +112,14 @@ public class SemiThread extends Thread {
 					String classPath = getMeCorrectNameFormat(file.getAbsolutePath());
 					String methodName = clazz.getMethods().get(index).getName();
 					settings = new MethodOppExtractorSettings();
+					System.out.println("new MethodOppExtractor");
 					MethodOppExtractor extractor = new MethodOppExtractor(file, clazz.getMethods().get(index).getName(),
 							settings, clazz);
 
 					Method method = clazz.getMethods().getMethodByName(methodName);
 					ArrayList<Opportunity> opportunities = method.getOpportunityList().getOptimals();
+
+					System.out.println("Preparing opportunity for databse");
 
 					if (opportunities.size() > 0) {
 						Opportunity opp = opportunities.get(0);
@@ -120,6 +131,8 @@ public class SemiThread extends Thread {
 								opp.getStartLineCluster(), opp.getEndLineCluster(),
 								opp.getOpportunityBenefitMetricByName("lcom2"), method.getMetricIndexFromName("lcom2"),
 								method.getMetricIndexFromName("size"), classPath);
+
+						System.out.println("Opportunity prepared");
 					}
 				}
 			}
@@ -129,7 +142,7 @@ public class SemiThread extends Thread {
 			alayzedMethods.add("at try catch");
 			return true;
 		}
-
+		System.out.println("Done Analysis for file: " + filePath);
 		return ret;
 	}
 

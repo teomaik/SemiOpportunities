@@ -44,6 +44,7 @@ public class MethodOppExtractor {
 			MethodOppExtractorSettings extractor_settings, JavaClass clazz) {
 		// super("Extract Method Opportunities : " + selected_method);
 		// setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+		System.out.println("MethodOppExtractor started 1");
 		this.file = java_source_file;
 		this.settings = extractor_settings;
 		this.settings.setParentFrame(this);
@@ -57,6 +58,7 @@ public class MethodOppExtractor {
 		this.clazz = clazz;
 		calcOportunities();
 
+		System.out.println("MethodOppExtractor done 1");
 		// initComponents();
 		// loadFile();
 		// initListenerForJlist();
@@ -67,6 +69,8 @@ public class MethodOppExtractor {
 	}
 
 	public Void calcOportunities() {
+
+		System.out.println("calcOportunities started");
 		try {
 			if (!method.been_analysed) {
 				clazz.identifyExtractMethodOpportunitiesForOneMethod(clazz.getInvalid_lines(),
@@ -79,12 +83,14 @@ public class MethodOppExtractor {
 			ex.printStackTrace();
 		}
 
+		System.out.println("calcOportunities done");
 		return null;
 	}
 
 	// Cosntructoe for the premade functionality
 	public MethodOppExtractor(File inputFile, MethodOppExtractorSettings extractor_settings) {
 		// super("Extract Method Opportunities : " + inputFile.getName());
+		System.out.println("MethodOppExtractor started 2");
 		file = null;
 		clazz = null;
 		selected_method = null;
@@ -99,6 +105,7 @@ public class MethodOppExtractor {
 
 		groupPreloadedOpporunities(inputFile);
 		clusterOpportunitiesWithParameters();
+		System.out.println("MethodOppExtractor done 2");
 	}
 
 	public void setSettings(MethodOppExtractorSettings settings) {
@@ -255,10 +262,8 @@ public class MethodOppExtractor {
 
 	public void clusterOpportunitiesWithParameters() {
 
-		System.out.println("***POINT 1");
 		this.method.getOpportunityList().printOptimals();
 
-		System.out.println("***POINT 2");
 		if (LongMethodDetector.DebugMode) {
 			System.out.println(
 					"Total optimal opps: " + this.method.getOpportunityList().getNumberOfOpportunitySuggestions());
