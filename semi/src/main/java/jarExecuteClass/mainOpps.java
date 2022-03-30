@@ -8,24 +8,19 @@ public class mainOpps {
 
 	public static void main(String[] args) {
 
-//***DEBUG ***TEST <
 		doEndStuff();
-
-		boolean test = true;
-		if (test) {
-			test = testThings(); // ***POINT TEST_COM
-			return;
-		}
-		//doEndStuff();
-
-//***DEBUG ***TEST >
-
-		if (args.length != 5) {
+		
+		if (args.length != 8) {
 			System.out.println("Wrong number of arguments");
-			System.out.println("You need to provide 5 arguments: " + "\n1: programming language (java, c, cpp)"// , f,
-																												// f90)"
-					+ "\n2: project name" + "\n3: project version" + "\n4: path to project directory"
-					+ "\n5: path to database credential file");
+			System.out.println("You need to provide 5 arguments: " 
+			+ "\n1: programming language (java, c, cpp)"// , f,																												// f90)"
+			+ "\n2: project name" 
+			+ "\n3: project version" 
+			+ "\n4: path to project directory"
+			+ "\n5: The server url for the database"
+			+ "\n6: The database name"
+			+ "\n7: The username for the database"
+			+ "\n8: The password for the database");
 			System.exit(1);
 		}
 
@@ -39,7 +34,8 @@ public class mainOpps {
 		long start = System.currentTimeMillis();
 		long end;
 
-		BasicController controller = new BasicController(args[0], args[1], args[2], args[3], args[4]);
+		//serverName, databaseName, username, password
+		BasicController controller = new BasicController(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
 		boolean result = controller.runExperiment();
 
 		doEndStuff();
@@ -64,39 +60,6 @@ public class mainOpps {
 				fileList[i].delete();
 			}
 		}
-	}
-
-	public static boolean testThings() {
-		long start = System.currentTimeMillis();
-		long end;
-
-		// BasicController controller = new BasicController("java", "test", "222",
-		// "/home/anon/Downloads/testNikos/_testFolder", "nosd");
-
-		String dbPath = "C:\\Users\\temp\\Documents\\GitHub\\Workspace\\Uo\\dbCredentials_uom.txt";
-
-		String prjPath = "";
-		prjPath = "C:\\Users\\Maik\\Downloads\\kameleon2\\base\\src";
-		prjPath = "C:\\Users\\Maik\\Documents\\_Random_useless\\Technical-Debt-Management-Toolbox-master";
-		// prjPath = "C:\\Users\\temp\\Downloads\\delete\\argparse4j-master";
-		// prjPath = "C:\Users\temp\Downloads\delete\fastjson-master\src";
-		prjPath = "C:\\Users\\temp\\Downloads\\jcommander-main";
-
-		BasicController ctrl = new BasicController("java", "TestPrj", "0", prjPath, dbPath);
-
-		boolean result = ctrl.runExperiment(); // ***TEMP_COMMENT
-
-		doEndStuff(); // ***POINT TEST_COM diagrfei ta _parsed arxeia.
-		System.out.println("Telos to test!!!!");
-		if (result) {
-			System.out.println("Executed correctly");
-		} else {
-			System.out.println("There was an error");
-		}
-		end = System.currentTimeMillis();
-		System.out.println("Total Time: " + ((end - start) / 1000) / 60 + " minutes");
-		return true;
-
 	}
 
 }

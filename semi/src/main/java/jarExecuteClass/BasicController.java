@@ -23,7 +23,6 @@ public class BasicController {
 	private String projectName = null;
 	private String projectProgramingLanguage = null;
 	private String projectDirectoryPath = null;
-	private String credPath = null;
 
 	// private ArrayList<JavaClass> classResults = new ArrayList<>();
 	private String selected_metric = "SIZE";// "LCOM1", "LCOM2", "LCOM4", "COH", "CC" //***???
@@ -40,22 +39,21 @@ public class BasicController {
 
 	private int C_ProjectVersion = 999;
 
-	public BasicController(String type, String projectName, String C_ProjectVersion, String directoryPath,
-			String dbCredPath) {
-		if (type == null || type.isEmpty() || type.trim().length() == 0 || projectName == null || projectName.isEmpty()
-				|| projectName.trim().length() == 0 || C_ProjectVersion == null || C_ProjectVersion.isEmpty()
-				|| C_ProjectVersion.trim().length() == 0 || directoryPath == null || directoryPath.isEmpty()
-				|| directoryPath.trim().length() == 0 || dbCredPath == null || dbCredPath.isEmpty()
-				|| dbCredPath.trim().length() == 0) {
+	public BasicController(String type, String projectName, String projectVersion, String directoryPath, String serverName, String databaseName, String username, String password) {
+		if (type == null || type.isEmpty() || type.trim().length() == 0 
+				|| projectName == null || projectName.isEmpty() || projectName.trim().length() == 0 
+				|| projectVersion == null || projectVersion.isEmpty() || projectVersion.trim().length() == 0 
+				|| directoryPath == null || directoryPath.isEmpty()	|| directoryPath.trim().length() == 0 
+				|| serverName == null || serverName.isEmpty() || serverName.trim().length() == 0
+				|| databaseName == null || databaseName.isEmpty() || databaseName.trim().length() == 0) {
 			return;
 		}
 		if (!type.equals("c") && !type.equals("cpp") && !type.equals("java")) {
 			return;
 		}
 
-		credPath = dbCredPath;
-		this.C_ProjectVersion = Integer.valueOf(C_ProjectVersion);
-		dbCon = new DbController(dbCredPath);
+		this.C_ProjectVersion = Integer.valueOf(projectVersion);
+		dbCon = new DbController(serverName, databaseName, username, password);
 		if (!dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");
 			//return; // ***POINT TEST_COM
@@ -90,13 +88,6 @@ public class BasicController {
 		case "cpp":
 			commit = doAnalysis_C_Cpp(projectDirectoryPath);
 			break;
-		// case "f":
-		// commit = doAnalysis_F(projectDirectoryPath);
-		// break;
-		// case "f90":
-		// commit = doAnalysis_F(projectDirectoryPath);
-		// break;
-
 		default:
 			System.out.println("wrong argument for Programing Language (java, c, f, f90)");
 		}
@@ -122,7 +113,7 @@ public class BasicController {
 		System.out.println("***DEBUG beforeRef   --->   " + beforeRef);
 
 		writeLogSkippedFiles();
-		dbCon.getNewConnection(credPath);
+		dbCon.getNewConnection();
 
 		if (!this.dbCon.isReady()) {
 			System.out.println("Problem with databaseConnection");

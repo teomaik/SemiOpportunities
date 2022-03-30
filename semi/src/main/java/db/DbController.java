@@ -38,9 +38,14 @@ public class DbController {
 	ArrayList<Double> methodOriginalCohesion = new ArrayList<Double>();
 	ArrayList<Double> LoC = new ArrayList<Double>();
 
-	public DbController(String path) {
-		this.path = path;
-		conn = getConnection(path);
+	public DbController(String serverName, String databaseName, String username, String password) {
+
+		this.username = username;
+		this.password = password;
+		this.serverName = serverName;
+		this.databaseName = databaseName;
+
+		conn = getConnection(serverName, databaseName, username, password);
 		if (!this.isReady()) {
 			System.out.println("Null Connection");
 		} else {
@@ -228,91 +233,44 @@ public class DbController {
 		}
 	}
 
-	public void getNewConnection(String path) {
-		this.conn = getConnection(path);
+	public void getNewConnection() {
+		this.conn = getConnection(this.serverName, this.databaseName, this.username, this.password);
 		beginRUTransaction();
 	}
+	
+//	public void getNewConnection(String path) {
+//		this.conn = getConnection(path);
+//		beginRUTransaction();
+//	}
 
-	private Connection getConnection(String path) {
-
-		if (path == null || path.isEmpty()) {
-			return null;
-		}
+	private Connection getConnection(String serverName, String databaseName, String username, String password) {
 
 		boolean ok = false;
 
-		try {
-			ok = true;
-			// BufferedReader reader = new BufferedReader(new FileReader(filename));
-			// String line;
-
-			File file = new File(path);
-
-			if (!file.exists() || !file.isFile()) {
-				return null;
-			}
-
-			Scanner input = new Scanner(new FileInputStream(file));
-
-			boolean flag = input.hasNextLine();
-			if (!input.hasNextLine()) {
-				input.close();
-				return null;
-			}
-
-			while (flag) {
-				String line = input.nextLine();
-				if (line.startsWith("username=")) {
-					username = line.replaceFirst("username=", "");
-					// username = line;
-				} else if (line.startsWith("password=")) {
-					password = line.replaceFirst("password=", "");
-					// password = line;
-				} else if (line.startsWith("serverName=")) {
-					serverName = line.replaceFirst("serverName=", "");
-					// serverName = line;
-				} else if (line.startsWith("databaseName=")) {
-					databaseName = line.replaceFirst("databaseName=", "");
-					// databaseName = line;
-					// "jdbc:mysql://"+serverName+"/"+line+ "?user=" +username + "&password=" +
-					// password + "&useUnicode=true&characterEncoding=UTF-8";
-				}
-				flag = input.hasNextLine();
-			}
-			input.close();
-			// if (username == null || password == null || serverName == null ||
-			// databaseName == null) {
-			if (serverName == null || databaseName == null) {
-
-				ok = false;
-			}
-			if (!ok) {
-				System.out.println("One or more of the Credentials given is null");
-				return null;
-			}
-
-		} catch (Exception e) {
-			System.err.format("Exception occurred trying to read '%s'.", path);
-			e.printStackTrace();
+		ok = true;
+		
+		if (serverName == null || serverName.isEmpty() || 
+				databaseName == null || databaseName.isEmpty()) {
+			System.out.println("One or more of the Credentials given is null");
 			return null;
 		}
+
 
 		// <
 
 		String url = "jdbc:mysql://" + serverName + "/" + databaseName + "";
 
-		System.out.println("Connecting database...");
+		System.out.println("\n\n\nConnecting database...");
 
 		try {
 			Connection connection = DriverManager.getConnection(url, username, password);
 			System.out.println("Database connected!");
 			return connection;
 		} catch (SQLException e) {
-			System.out.println("Cannot connect the database!\n" + e.getMessage());
+			System.out.println("Cannot connect the database!\n");
 			return null;
 		}
 		// >
-
 	}
 
 	public int getVersion() {
